@@ -1,21 +1,24 @@
-create table if not exists customers (
-	customer_id int primary key,
-    fullname varchar(100) not null,
-    email varchar(255) not null unique,
-    wallet_id int not null,
-    foreign key (wallet_id) references wallets (wallet_id)
+CREATE TABLE customers (
+    customer_id INT PRIMARY KEY,
+    fullname VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE
 );
-create table if not exists wallets (
-	wallet_id int primary key,
-    balance bigint not null check (balance >= 0)
+CREATE TABLE wallets (
+    wallet_id INT PRIMARY KEY,
+    customer_id INT UNIQUE, 
+    balance BIGINT NOT NULL CHECK (balance >= 0),
+    
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
-
-create table if not exists histories (
-	history_id int primary key,
-    wallet_id int not null,
-    foreign key (wallet_id) references wallets (wallet_id),
-    tranfer_type enum('withdraw', 'deposit', 'payment') not null,
-    amount bigint not null check (amount > 0),
-    status varchar(20) not null default 'pending',
-    created_at timestamp default current_timestamp
-    );
+CREATE TABLE histories (
+    history_id INT PRIMARY KEY,
+    wallet_id INT NOT NULL,
+    
+    transfer_type ENUM('withdraw', 'deposit', 'payment') NOT NULL,
+    amount BIGINT NOT NULL CHECK (amount > 0),
+    
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (wallet_id) REFERENCES wallets(wallet_id)
+);
